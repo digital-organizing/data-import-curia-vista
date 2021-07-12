@@ -153,7 +153,7 @@ def fetch_entities_by_fk(entity_type_to_fetch, fk, fetcher, languages=None):
 def update_db(connection, table_name, columns, rows):
     statement = (f'INSERT INTO {table_name} ({", ".join(columns)})'
                  f' VALUES ({", ".join(["%s"] * len(columns))}) '
-                 f' ON CONFLICT (id, language) DO UPDATE SET {", ".join([f"{c} = EXCLUDED.{c}" for c in columns])};')
+                 f' ON CONFLICT ON CONSTRAINT {table_name}_pkey DO UPDATE SET {", ".join([f"{c} = EXCLUDED.{c}" for c in columns])};')
     with connection.cursor() as cur:
         def do_many(rows):
             try:
