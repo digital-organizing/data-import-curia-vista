@@ -39,7 +39,7 @@ def property_to_schema(self):
 
 
 def entity_type_to_schema(self):
-    res = f"CREATE TABLE {self.table_name} (\n  "
+    res = f"CREATE TABLE odata.{self.table_name} (\n  "
     res += ",\n  ".join([property_to_schema(p) for p in self.properties]) + ","
     res += f"\n  {key_to_schema(self.key)}"
     res += "\n);"
@@ -57,8 +57,8 @@ def association_to_schema(self):
         dependent = Association.BROKEN_REFERENTIAL_CONSTRAINTS[
             self.constrain_name] if self.constrain_name in Association.BROKEN_REFERENTIAL_CONSTRAINTS else principal_or_dependent_to_schema(
             self.referential_constraint.dependent)
-        return (f"""ALTER TABLE {self.dependent.table_name}\n"""
-                f"""ADD CONSTRAINT {self.constrain_name} FOREIGN KEY ({dependent}) REFERENCES {self.principal.table_name} ({principal_or_dependent_to_schema(self.referential_constraint.principal)});""")
+        return (f"""ALTER TABLE odata.{self.dependent.table_name}\n"""
+                f"""ADD CONSTRAINT {self.constrain_name} FOREIGN KEY ({dependent}) REFERENCES odata.{self.principal.table_name} ({principal_or_dependent_to_schema(self.referential_constraint.principal)});""")
     else:
         raise RuntimeError(
             f"Not implemented Association: Principal='{self.principal.multiplicity}', Dependent='{self.dependent.multiplicity}'")
@@ -72,7 +72,7 @@ def odata_to_schema(odata):
         sections.append(
             '\n\n'.join(association_to_schema(a) for a in odata.associations if association_to_schema(a)))
 
-    return "\n\n".join(sections)
+    return "CREATE SCHEMA IF NOT EXISTS odata;\n\n" + "\n\n".join(sections)
 
 
 def to_schema(metadata: str):

@@ -151,7 +151,7 @@ def fetch_entities_by_fk(entity_type_to_fetch, fk, fetcher, languages=None):
 
 
 def update_db(connection, table_name, columns, rows):
-    statement = (f'INSERT INTO {table_name} ({", ".join(columns)})'
+    statement = (f'INSERT INTO odata.{table_name} ({", ".join(columns)})'
                  f' VALUES ({", ".join(["%s"] * len(columns))}) '
                  f' ON CONFLICT ON CONSTRAINT {table_name}_pkey DO UPDATE SET {", ".join([f"{c} = EXCLUDED.{c}" for c in columns])};')
     with connection.cursor() as cur:
@@ -243,7 +243,7 @@ def main():
 
             if entity_type.name == 'Voting':
                 with connection.cursor() as cur:
-                    cur.execute('SELECT id FROM vote;')
+                    cur.execute('SELECT id FROM odata.vote;')
                     index = 0
                     all_vote_ids = cur.fetchall()
                     for row in all_vote_ids:

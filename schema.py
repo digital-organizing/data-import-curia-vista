@@ -8,7 +8,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--schema", type=argparse.FileType('r'), required=True)
     args = parser.parse_args()
-    print(to_schema(args.schema.readlines()))
+    print(to_schema(args.schema.read()))
 
 
 if __name__ == '__main__':
