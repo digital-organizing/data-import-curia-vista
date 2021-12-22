@@ -26,3 +26,5 @@ __pycache__
 # API keys
 .google_API_keys
 .httr-oauth
+*.sqlite
+*.log

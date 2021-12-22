@@ -1,7 +1,7 @@
 # About
 
-This project copies the Curia Vista data into a (local) database. This allows to run arbitrary queries which would not
-be possible using the official API.
+This project copies the Curia Vista data into a local PostgreSQL database. This allows to improve its quality and run
+arbitrary queries on it (quickly).
 
 ## Background
 
@@ -10,71 +10,87 @@ session 1995 (Federal Council dispatches, procedural requests, elections, petiti
 
 Source and further reading: [parlament.ch](https://www.parlament.ch/en/ratsbetrieb/curia-vista)
 
+## Design Goals
+
+The Curia Vista database has many quirks and shortcomings (e.g. violation of self-imposed constraints, non-normalized
+data).
+
+This project aims to improve the data quality by:
+ 1) Enforcing database constrains (generic)
+   - Reporting violations in an actionable manner
+ 2) Normalize the mirrored data 
+ 3) Support fixing up known issues (Curia Vista specific)
+
 ## Setup
 
-### Debian 11
-
 ```console
-apt install \
-  graphviz \
-  python3-psycopg2 \
-  python3-requests-cache \
-  python3-toposort
+pip install -r requirements.txt
 ```
 
-## Example: Secure Database Socket Forwarding
+As of 2022-01-05, the most recent version of pyodata 1.7.1 does not bring all features needed by this project.
+For now, please install my [fork][pyodata_fork] locally while I work on upstreaming those changes.
 
-This is optional, but simplifies setting up a secure connection to the database server. Also, the remaining
-documentation in this file assumes that the database is accessible on 127.0.0.1:5432.
+[pyodata_fork]  https://github.com/rettichschnidi/python-pyodata/releases/tag/rs%2Fcuria-vista-needs-v4
+
+## Usage
+
+The database password needs to be provided using the ~/.pgpass file.
+
+For assistance with the tool, please pass it `--help`, i.e. `./curia_vista.py --help` or `./curia_vista.py sync --help`.
+
+### Mirroring: Database initialization
+
+This tool converts the [OData 2.0](https://www.odata.org/documentation/odata-version-2-0/) based
+[metadata description](https://ws.parlament.ch/OData.svc/$metadata) to an SQL schema.
+
+```console
+./curia_vista.py init
+```
+
+## Mirroring: Initial Import
+
+```console
+./curia_vista.py sync
+```
+
+## Hints
+
+### Secure Database Socket Forwarding
+
+This is optional, but simplifies setting up a secure connection to an external database server. Examples in this readme
+assume that the database is accessible at 127.0.0.1:5432.
 
 ```console
 ssh votelog -N -L 5432:127.0.0.1:5432
 ```
 
-## Update XML Schema
-
-While not strictly necessary, it makes debugging easier when we have a history of the XML manifest.
+### Dependency Checking
 
 ```console
-curl -sS 'https://ws.parlament.ch/odata.svc/$metadata' | xmllint --format - > doc/$(date +%Y-%m-%d)-metadata.xml
-ln -sf $(date +%Y-%m-%d)-metadata.xml doc/metadata.xml
+./curia_vista.py dot | dotty -
 ```
 
-## Mirroring: Schema Creation
-
-This tool converts the [OData 3.0](https://www.odata.org/documentation/odata-version-3-0/) based
-[metadata description](https://ws.parlament.ch/OData.svc/$metadata) to an SQL schema.
+### OData Structure
 
 ```console
-python3 schema.py --schema doc/metadata.xml > schema.sql
-psql --host=127.0.0.1 --user curiavista < schema.sql
+./curia_vista.py dump
 ```
 
-## Mirroring: Dependency Checking
+Please extend the dump subcommand with whatever is needed to scratch your itch.
+
+### Analyzing HTTPS Requests
+
+Some OData provider might offer their API only via HTTPS.
+
+To investigate the requests sent, install [mitmproxy](https://mitmproxy.org/) and run it as HTTP -> HTTPS proxy towards
+the OData server:
 
 ```console
-python3 dot.py --schema doc/metadata.xml | dotty -
+mitmdump --mode reverse:https://ws.parlament.ch/
 ```
 
-## Mirroring: Data Import
+Then change the URL to localhost:
 
 ```console
-python3 sync.py --schema doc/metadata.xml -v
-```
-
-Custom database user, name, port, etc. can be passed using arguments. The database password needs to be provided using
-the ~/.pgpass file.
-
-### Use Cache
-
-Using a cache allows to re-run an import much quicker. Beware of the (undocumented) dragons!
-
-```console
-python3 sync.py --cache curia_vista_import_cache --schema doc/metadata.xml
-```
-
-### Limit to a Single Language
-
-```console
-python3 sync.py --languages DE --schema doc/metadata.xml -u $DB_USER_NAME -p $DB_USER_PASSWORD -d $DB_NAME
+./curia_vista.py --url http://localhost:8080/odata.svc sync
 ```
