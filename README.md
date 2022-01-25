@@ -16,10 +16,11 @@ The Curia Vista database has many quirks and shortcomings (e.g. violation of sel
 data).
 
 This project aims to improve the data quality by:
- 1) Enforcing database constrains (generic)
+
+1) Enforcing database constrains (generic)
    - Reporting violations in an actionable manner
- 2) Normalize the mirrored data 
- 3) Support fixing up known issues (Curia Vista specific)
+2) Normalize the mirrored data 
+3) Support fixing up known issues (Curia Vista specific)
 
 ## Setup
 
@@ -30,7 +31,7 @@ pip install -r requirements.txt
 As of 2022-01-05, the most recent version of pyodata 1.7.1 does not bring all features needed by this project.
 For now, please install my [fork][pyodata_fork] locally while I work on upstreaming those changes.
 
-[pyodata_fork]  https://github.com/rettichschnidi/python-pyodata/releases/tag/rs%2Fcuria-vista-needs-v4
+[pyodata_fork]: https://github.com/rettichschnidi/python-pyodata/releases/tag/rs%2Fcuria-vista-needs-v4
 
 ## Usage
 
