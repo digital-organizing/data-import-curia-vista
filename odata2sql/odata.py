@@ -9,7 +9,7 @@ import requests
 from toposort import toposort
 
 import pyodata
-from pyodata.v2.model import EntityType, Association
+from pyodata.v2.model import EntityType, Association, Config
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class Context:
             import requests_cache
             requests_cache.install_cache(args.requests_cache)
 
-        client = pyodata.Client(args.url, requests.Session(), retain_null=True)
+        client = pyodata.Client(args.url, requests.Session(), config=Config(retain_null=True))
         return Context(client,
                        getattr(args, 'include', set()),
                        getattr(args, 'skip', set()),
