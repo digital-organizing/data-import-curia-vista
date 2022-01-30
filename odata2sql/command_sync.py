@@ -5,8 +5,8 @@ from typing import Dict, List
 from psycopg2 import ProgrammingError
 from psycopg2.extras import execute_batch
 
-from odata2sql.sql import database_connection, to_pg_name
 from odata2sql.odata import Context
+from odata2sql.sql import database_connection, to_pg_name
 from pyodata.v2.model import EntityType
 
 log = logging.getLogger(__name__)

@@ -4,8 +4,8 @@ from typing import Iterable, Optional
 
 from psycopg2._psycopg import cursor
 
-from odata2sql.sql import database_connection, to_pg_name
 from odata2sql.odata import Context
+from odata2sql.sql import database_connection, to_pg_name
 from pyodata.v2.model import EntityType, StructTypeProperty, Association
 
 log = logging.getLogger(__name__)
