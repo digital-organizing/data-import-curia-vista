@@ -1,4 +1,3 @@
-import datetime
 import logging
 import sys
 from typing import Dict, List
@@ -43,25 +42,6 @@ def update_db(db_connection, table_name: str, sql_column_names: List[str], sql_r
             do_many(rows[:len(rows) // 2])
 
         do_many(sql_row_data)
-
-
-EPOCH = datetime.datetime.utcfromtimestamp(0)
-
-
-def _parse_date(data: str):
-    """
-    Convert  "ASP.Net JSON Date" (e.g. '/Date(1293368772797)/') to a timestamp string understood by the SQL driver.
-    :param data: A "ASP.Net JSON Date" string
-    :return:
-    """
-    time_part = data.split('(')[1].split(')')[0]
-    if "+" in time_part:
-        adjusted_seconds = int(time_part[:-5]) / 1000 + int(time_part[-5:]) / 100 * 3600
-    else:
-        adjusted_seconds = int(time_part) / 1000
-
-    dt = EPOCH + datetime.timedelta(seconds=adjusted_seconds)
-    return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_entity_type_property_names(entity_type: EntityType) -> List[str]:
