@@ -44,14 +44,14 @@ def update_db(db_connection, table_name: str, sql_column_names: List[str], sql_r
         do_many(sql_row_data)
 
 
-def get_entity_type_property_names(entity_type: EntityType) -> List[str]:
+def get_property_names_of_entity_type(entity_type: EntityType) -> List[str]:
     """Name of all properties for a given entity type"""
     return [p.name for p in entity_type.proprties()]
 
 
 def get_gp_column_names_from_entity_type(entity_type: EntityType) -> List[str]:
     """SQL column names derived from an entity type"""
-    return [to_pg_name(n) for n in get_entity_type_property_names(entity_type)]
+    return [to_pg_name(n) for n in get_property_names_of_entity_type(entity_type)]
 
 
 def sync_entities_by_fk(odata: Context, db_connection, broken: EntityType, sync_by: EntityType):
@@ -134,7 +134,7 @@ def work(context: Context, args, sync_by_fk: Dict[str, str] = {}):
                     if entity is None:
                         break
                     row = []
-                    for property_name in get_entity_type_property_names(entity_type):
+                    for property_name in get_property_names_of_entity_type(entity_type):
                         value = getattr(entity, property_name)
                         row.append(value)
                     sql_row_data.append(row)
