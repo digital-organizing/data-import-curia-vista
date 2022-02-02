@@ -1,10 +1,7 @@
 import contextlib
-import logging
 import re
 
 import psycopg2
-
-log = logging.getLogger('sql')
 
 # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
 SQL_KEY_WORDS = [

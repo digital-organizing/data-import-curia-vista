@@ -5,6 +5,7 @@ from typing import Dict, List
 from psycopg2 import ProgrammingError
 from psycopg2.extras import execute_batch
 
+from odata2sql.logging import LogDBHandler
 from odata2sql.odata import Context
 from odata2sql.sql import database_connection, to_pg_name
 from pyodata.v2.model import EntityType
@@ -24,7 +25,7 @@ def update_db(db_connection, table_name: str, sql_column_names: List[str], sql_r
     with db_connection.cursor() as cur:
         def do_many(rows):
             try:
-                execute_batch(cur, statement, rows)
+                execute_batch(cur, statement, rows, page_size=1000)
                 db_connection.commit()
                 return
             except ProgrammingError as e:
@@ -112,6 +113,8 @@ def fetch_all_entities_by_entity_type(odata: Context, entity_type: EntityType):
 def work(context: Context, args, sync_by_fk: Dict[str, str] = {}):
     """Sync of OData into our own database. On conflict, existing data will be overwritten"""
     with database_connection(args) as db_connection:
+        db_logger = LogDBHandler(context.session_id, db_connection)
+        log.addHandler(db_logger)
         ranks = context.get_topology()
         for rank, entity_types_in_rank in enumerate(ranks):
             log.info(f'Fetching rank #{rank}: {", ".join(e.name for e in entity_types_in_rank)}')
