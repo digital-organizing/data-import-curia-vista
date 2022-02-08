@@ -31,7 +31,7 @@ pip install -r requirements.txt
 As of 2022-01-26, the most recent version of pyodata does not bring all features needed by this project.
 For now, please install my [fork][pyodata_fork] locally while I work on upstreaming those changes.
 
-[pyodata_fork]: https://github.com/rettichschnidi/python-pyodata/releases/tag/rs%2Fcuria-vista-needs-v7
+[pyodata_fork]: https://github.com/rettichschnidi/python-pyodata/releases/tag/rs%2Fcuria-vista-needs-v8
 
 ## Usage
 

@@ -1,4 +1,5 @@
 ipython
+lxml # dependency of pyodata
 psycopg2~=2.9.1
 pytest
 requests~=2.25.1
