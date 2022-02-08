@@ -44,6 +44,8 @@ def main():
                             help='Database name (default: %(default)s)')
     for parser in [init_parser]:
         parser.add_argument("-f", '--force', action='store_true', help='Erase all preexisting content in database')
+    for parser in [dump_parser]:
+        parser.add_argument('--ipython', action='store_true', help='Drop into IPython shell')
     args = parser_top_level.parse_args()
 
     log_level = max(3 - args.verbose_count, 0) * 10
