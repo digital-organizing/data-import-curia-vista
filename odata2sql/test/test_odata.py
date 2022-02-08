@@ -17,13 +17,13 @@ def client():
     return pyodata.Client(SERVICE_URL, requests.Session(), metadata=local_metadata)
 
 
-class TestOdata:
-    def test_adjust_next_url_not_needed(self, client):
-        o = Context(client, None, None, SERVICE_URL)
-        assert o.adjust_next_url(
-            "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'") == "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'"
+def test_adjust_next_url_not_needed(client):
+    o = Context(client, None, None, SERVICE_URL)
+    assert o.adjust_next_url(
+        "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'") == "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'"
 
-    def test_adjust_next_url(self, client):
-        o = Context(client, None, None, 'http://localhost:8080/odata.svc')
-        assert o.adjust_next_url(
-            "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'") == "http://localhost:8080/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'"
+
+def test_adjust_next_url(client):
+    o = Context(client, None, None, 'http://localhost:8080/odata.svc')
+    assert o.adjust_next_url(
+        "https://ws.parlament.ch/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'") == "http://localhost:8080/odata.svc/MemberCouncil?$inlinecount=allpages&$skiptoken=4090,'RM'"
