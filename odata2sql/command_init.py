@@ -86,7 +86,7 @@ def _association_to_schema(association: Association) -> Optional[str]:
 
 def _odata_to_ddl(odata: Context):
     sections = []
-    for entity_type in odata.all_entity_types:
+    for entity_type in odata.client.schema.entity_types:
         sections.append(_entity_type_to_schema(entity_type))
     for association in odata.associations:
         if s := _association_to_schema(association):

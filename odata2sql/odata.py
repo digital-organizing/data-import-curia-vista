@@ -49,27 +49,20 @@ class Context:
     @cached_property
     def skipped_entity_types(self) -> Set[EntityType]:
         """All skipped (ignored) entity types."""
-        return set(x for x in self.all_entity_types if x.name in self.skip)
+        return set(x for x in self.client.schema.entity_types if x.name in self.skip)
 
     @cached_property
     def included_entity_types(self) -> Set[EntityType]:
         """Included entity types including their dependencies"""
         if not self.include:
-            return set(self.all_entity_types)
+            return set(self.client.schema.entity_types)
         result = set()
-        for et in set(et for et in self.all_entity_types if et.name in self.include):
+        for et in set(et for et in self.client.schema.entity_types if et.name in self.include):
             result.add(et)
             result |= self.get_dependencies(et, recursive=True)
         return result
 
-    @cached_property
-    def all_entity_types(self) -> Set[EntityType]:
-        """All entity types (not collections!) in the OData schema.
-        See also: https://github.com/SAP/python-pyodata/pull/183
-        """
-        return set(x for x in self.client.schema.entity_types if not x.is_collection)
-
-    def get_dependencies(self, dependant: EntityType, recursive) -> Set[EntityType]:
+    def get_dependencies(self, dependant: EntityType, recursive: bool) -> Set[EntityType]:
         """Entity types which @entity_type depends on (links to), optionally @recursive-ly"""
         result = set()
         for a in self.client.schema.associations:
