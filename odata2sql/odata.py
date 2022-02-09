@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import dataclasses
 import logging
 import re
 import uuid
@@ -9,9 +10,17 @@ import requests
 from toposort import toposort
 
 import pyodata
-from pyodata.v2.model import EntityType, Association, Config
+from pyodata.v2.model import EntityType, Association, Config, EndRole
 
 log = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass(frozen=True)
+class Multiplicity:
+    dependant: EntityType
+    dependant_multiplicity: str
+    principal: EntityType
+    principal_multiplicity: str
 
 
 class Context:
@@ -109,3 +118,15 @@ class Context:
         if m := re.match(r'^.+/odata.svc(?P<interesting_part>.+)$', next_url):
             return self.url + m.group('interesting_part')
         raise ValueError(f'Unexpected URL: "{next_url}"')
+
+    def get_dependency_with_multiplicity(self, entity_type: EntityType) -> Iterable[Multiplicity]:
+        """Multiplicity for all entity types which @entity_type depends on"""
+        for association in self.client.schema.associations:
+            assert len(association.end_roles) == 2
+            assert association.referential_constraint.principal.name == association.end_roles[0].role
+            principal, dependent = association.end_roles
+            if dependent.entity_type != entity_type:
+                continue
+            assert dependent.multiplicity == EndRole.MULTIPLICITY_ZERO_OR_MORE
+            yield Multiplicity(dependent.entity_type, dependent.multiplicity, principal.entity_type,
+                               principal.multiplicity)

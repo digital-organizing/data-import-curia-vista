@@ -16,6 +16,8 @@ def work(odata: Context, args):
         print("  }")
 
     for entity_type in odata.included_entity_types:
-        for dependency in odata.get_dependencies(entity_type, recursive=False):
-            print(f"  {entity_type.name} -> {dependency.name};")
+        for multiplicity in odata.get_dependency_with_multiplicity(entity_type):
+            print('  {} -> {} [label="{} - {}"];'.format(multiplicity.dependant.name, multiplicity.principal.name,
+                                                         multiplicity.dependant_multiplicity,
+                                                         multiplicity.principal_multiplicity))
     print("}")
