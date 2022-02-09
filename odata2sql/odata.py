@@ -20,16 +20,16 @@ class Context:
                  include: Optional[Iterable[str]],
                  skip: Optional[Iterable[str]],
                  url: str):
-        self.client = client
-        self.include = set(include) if include else set()
-        self.skip = set(skip) if skip else set()
+        self._client = client
+        self._include = set(include) if include else set()
+        self._skip = set(skip) if skip else set()
         for et_name in (self.skip | self.include):
             try:
                 self.client.schema.entity_type(et_name)
             except KeyError as e:
                 log.error(f'Invalid entity type name: "{et_name}"')
                 raise e
-        self.url = url
+        self._url = url
         if not self.url.endswith('/odata.svc'):
             raise ValueError('Expecting OData URLs to end with /odata.svc')
         self.session_id = uuid.uuid4()
@@ -45,6 +45,22 @@ class Context:
                        getattr(args, 'include', set()),
                        getattr(args, 'skip', set()),
                        args.url)
+
+    @cached_property
+    def client(self) -> pyodata.Client:
+        return self._client
+
+    @cached_property
+    def skip(self) -> Optional[Iterable[str]]:
+        return self._skip
+
+    @cached_property
+    def include(self) -> Optional[Iterable[str]]:
+        return self._include
+
+    @cached_property
+    def url(self) -> str:
+        return self._url
 
     @cached_property
     def skipped_entity_types(self) -> Set[EntityType]:
