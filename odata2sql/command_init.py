@@ -80,6 +80,8 @@ def _association_to_schema(association: Association) -> Optional[str]:
             to_pg_name(x) for x in association.referential_constraint.dependent.property_names)
         return (f"""ALTER TABLE odata.{dependent_table_name}\n"""
                 f"""ADD CONSTRAINT odata_{to_pg_name(association.name)} FOREIGN KEY ({dependent_depend_properties}) REFERENCES odata.{principal_table_name} ({principal_depend_properties});""")
+    raise RuntimeError(
+        f'Unexpected multiplicity on association "{association.name}": "{dependent.multiplicity}" -> "{principal.multiplicity}"')
 
     raise NotImplemented(f"Principal='{principal.multiplicity}', Dependent='{dependent.multiplicity}'")
 
