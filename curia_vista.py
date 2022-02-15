@@ -3,7 +3,8 @@ import argparse
 import logging
 import sys
 
-from odata2sql import command_dot, command_dump, command_init, command_sync
+from odata2sql import command_dot, command_dump, command_init, command_sync, command_benchmark_aiohttp, \
+    command_benchmark_threading
 from odata2sql.odata import Context
 
 log = logging.getLogger(__name__)
@@ -24,15 +25,19 @@ def main():
     parser_top_level.add_argument('--requests-cache', type=str,
                                   help="Cache HTTP requests in <cache>.sqlite. Useful to speed up development.")
     subparsers = parser_top_level.add_subparsers(dest='command', required=True)
+    benchmark_aiohttp_parser = subparsers.add_parser('benchmark-aiohttp', help='Benchmark OData server using aiohttp')
+    benchmark_threading_parser = subparsers.add_parser('benchmark-threading',
+                                                       help='Benchmark OData server using multiple threads')
     init_parser = subparsers.add_parser('init', help='Initialize database')
     sync_parser = subparsers.add_parser('sync', help='Synchronize database from scratch')
     update_parser = subparsers.add_parser('update', help='Incrementally update database')
     dot_parser = subparsers.add_parser('dot', help='Show dependencies between entity types')
     dump_parser = subparsers.add_parser('dump', help='Show dependencies between entity types')
-    for parser in [init_parser, sync_parser, update_parser, dot_parser, dump_parser]:
+    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, init_parser, sync_parser, update_parser,
+                   dot_parser, dump_parser]:
         parser.add_argument('--include', type=str, nargs='+',
                             help='Entity types to work on, dependencies added as needed. All if unspecified.')
-    for parser in [sync_parser, update_parser, dump_parser]:
+    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, sync_parser, update_parser, dump_parser]:
         parser.add_argument('--skip', type=str, nargs='+', help='Forcefully ignore the listed entities. Beware!')
     for parser in [init_parser, sync_parser, update_parser]:
         parser.add_argument("-u", '--user', type=str, default='curiavista', help='Database user (default: %(default)s)')
@@ -53,6 +58,10 @@ def main():
     logging.basicConfig(stream=sys.stderr, level=log_level, format='%(asctime)s %(name)s %(levelname)s %(message)s')
 
     odata = Context.from_args(args)
+    if args.command == 'benchmark-aiohttp':
+        command_benchmark_aiohttp.work(odata, args)
+    if args.command == 'benchmark-threading':
+        command_benchmark_threading.work(odata, args)
     if args.command == 'dump':
         command_dump.work(odata, args)
     elif args.command == 'dot':

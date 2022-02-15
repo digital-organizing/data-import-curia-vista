@@ -5,3 +5,7 @@ pytest
 requests~=2.25.1
 requests-cache
 toposort~=1.6
+
+# Benchmarking
+aiohttp
+tabulate
