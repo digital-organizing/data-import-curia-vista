@@ -42,3 +42,29 @@ def test_get_dependency_with_multiplicity(context):
         Multiplicity(transcript, '*', context.client.schema.entity_type('Subject'), '1'),
         Multiplicity(transcript, '*', context.client.schema.entity_type('Business'), '0..1')
     }
+
+
+@pytest.mark.parametrize('input_included,expected', [
+    (['Tags'], {'Tags'}),
+    (['Canton', 'Party'], {'Canton', 'Party'}),
+    (['PersonAddress'], {'PersonAddress', 'Person', 'MemberCouncil'}),
+    (None, {'Bill', 'BillLink', 'BillStatus', 'Business', 'BusinessResponsibility', 'BusinessRole', 'BusinessStatus',
+            'BusinessType', 'Canton', 'Citizenship', 'Committee', 'Council', 'External', 'LegislativePeriod', 'Meeting',
+            'MemberCommittee', 'MemberCommitteeHistory', 'MemberCouncil', 'MemberCouncilHistory', 'MemberParlGroup',
+            'MemberParty', 'Objective', 'ParlGroup', 'ParlGroupHistory', 'Party', 'Person', 'PersonAddress',
+            'PersonCommunication', 'PersonEmployee', 'PersonInterest', 'PersonOccupation', 'Preconsultation',
+            'Publication', 'Rapporteur', 'RelatedBusiness', 'Resolution', 'SeatOrganisationNr', 'Session', 'Subject',
+            'SubjectBusiness', 'Tags', 'Transcript', 'Vote', 'Voting'}),
+])
+def test_context_entity_types_included(client, input_included, expected):
+    c = Context(client, input_included, None, SERVICE_URL)
+    assert {et.name for et in c.included_entity_types} == expected
+
+
+@pytest.mark.parametrize('input_skipped,expected', [
+    (['Tags'], {'Tags'}),
+    (['Canton', 'Party'], {'Canton', 'Party'}),
+])
+def test_context_entity_types_skipped(client, input_skipped, expected):
+    c = Context(client, None, input_skipped, SERVICE_URL)
+    assert {et.name for et in c.skipped_entity_types} == expected
