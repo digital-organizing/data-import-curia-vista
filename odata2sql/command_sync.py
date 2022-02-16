@@ -9,6 +9,7 @@ from odata2sql.logging import LogDBHandler
 from odata2sql.odata import Context
 from odata2sql.sql import database_connection, to_pg_name
 from pyodata.v2.model import EntityType
+from pyodata.v2.service import GetEntitySetFilter
 
 log = logging.getLogger(__name__)
 
@@ -70,13 +71,13 @@ def sync_entities_by_fk(odata: Context, db_connection, broken: EntityType, sync_
     log.info(f'Syncing entity type "{broken.name}" by its references to "{sync_by.name}"')
     entity_set = getattr(odata.client.entity_sets, broken.name)
     with db_connection.cursor() as cursor:
-        cursor.execute(f'SELECT id FROM odata.{to_pg_name(sync_by.name)}')
+        cursor.execute(f'SELECT id, language FROM odata.{to_pg_name(sync_by.name)}')
         index = 1
         all_fk = cursor.fetchall()
         for row in all_fk:
             log.info(f'{broken.name} by {sync_by.name}: {index}/{len(all_fk)} done')
             entity_request = entity_set.get_entities()
-            entity_request.filter(entity_request.IdVote == row[0])
+            entity_request = entity_request.filter(GetEntitySetFilter.and_(entity_request.IdVote == row[0], entity_request.Language == row[1]))
             for r in entity_request.execute():
                 yield r
             index += 1
@@ -89,8 +90,10 @@ def fetch_all_entities_by_entity_type(odata: Context, entity_type: EntityType):
     done = 0
     expected_count = None
     while True:
-        entities = entity_set.get_entities()
-        entity_list = entities.next_url(next_url).count(inline=True).execute()
+        request = entity_set.get_entities()
+        if odata.odata_filter:
+            request = request.filter(odata.odata_filter)
+        entity_list = request.next_url(next_url).count(inline=True).execute()
         done += len(entity_list)
         log.info(f'{entity_type.name}: Got {done} out of {entity_list.total_count}')
         if expected_count is None:

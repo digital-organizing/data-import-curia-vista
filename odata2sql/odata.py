@@ -28,7 +28,9 @@ class Context:
                  client: pyodata.Client,
                  include: Optional[Iterable[str]],
                  skip: Optional[Iterable[str]],
-                 url: str):
+                 url: str,
+                 odata_filter: Optional[str],
+                 ):
         self._client = client
         self._include = set(include) if include else set()
         self._skip = set(skip) if skip else set()
@@ -41,19 +43,8 @@ class Context:
         self._url = url
         if not self.url.endswith('/odata.svc'):
             raise ValueError('Expecting OData URLs to end with /odata.svc')
+        self._odata_filter = odata_filter
         self.session_id = uuid.uuid4()
-
-    @classmethod
-    def from_args(cls, args):
-        if args.requests_cache:
-            import requests_cache
-            requests_cache.install_cache(args.requests_cache)
-
-        client = pyodata.Client(args.url, requests.Session(), config=Config(retain_null=True))
-        return Context(client,
-                       getattr(args, 'include', set()),
-                       getattr(args, 'skip', set()),
-                       args.url)
 
     @cached_property
     def client(self) -> pyodata.Client:
@@ -70,6 +61,10 @@ class Context:
     @cached_property
     def url(self) -> str:
         return self._url
+
+    @cached_property
+    def odata_filter(self) -> str:
+        return self._odata_filter
 
     @cached_property
     def skipped_entity_types(self) -> Set[EntityType]:

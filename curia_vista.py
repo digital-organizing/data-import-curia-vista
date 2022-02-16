@@ -3,15 +3,38 @@ import argparse
 import logging
 import sys
 
+import requests
+
+import pyodata
 from odata2sql import command_dot, command_dump, command_init, command_sync, command_benchmark_aiohttp, \
     command_benchmark_threading
 from odata2sql.odata import Context
+from pyodata.v2.model import Config
 
 log = logging.getLogger(__name__)
 
 SYNC_BY_FK = {
     'Voting': 'Vote'
 }
+
+
+def context_from_args(args):
+    if args.requests_cache:
+        import requests_cache
+        requests_cache.install_cache(args.requests_cache)
+
+    try:
+        language_filter = ' or '.join(f"(Language eq '{language}')" for language in args.language)
+    except (TypeError, AttributeError):
+        language_filter = None
+
+    client = pyodata.Client(args.url, requests.Session(), config=Config(retain_null=True))
+    return Context(client,
+                   getattr(args, 'include', set()),
+                   getattr(args, 'skip', set()),
+                   args.url,
+                   language_filter,
+                   )
 
 
 def main():
@@ -47,6 +70,9 @@ def main():
         parser.add_argument("-p", '--password', type=str, help='Attempting ~/.pgpass if not provided')
         parser.add_argument("-d", '--database', dest='dbname', type=str, default='curiavista',
                             help='Database name (default: %(default)s)')
+    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, sync_parser, update_parser]:
+        parser.add_argument('--language', type=str, nargs='+',
+                            help='Restrict import to specified language(s): DE, FR, IT, RM, EN. (default: all)')
     for parser in [init_parser]:
         parser.add_argument("-f", '--force', action='store_true', help='Erase all preexisting content in database')
     for parser in [dump_parser]:
@@ -57,7 +83,7 @@ def main():
     log.info(f"Setting loglevel to {log_level}")
     logging.basicConfig(stream=sys.stderr, level=log_level, format='%(asctime)s %(name)s %(levelname)s %(message)s')
 
-    odata = Context.from_args(args)
+    odata = context_from_args(args)
     if args.command == 'benchmark-aiohttp':
         command_benchmark_aiohttp.work(odata, args)
     if args.command == 'benchmark-threading':

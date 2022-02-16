@@ -9,8 +9,10 @@ from odata2sql.odata import Context
 log = logging.getLogger(__name__)
 
 
-def fetch_all_entities_of_type(service_url: str, entity_type: str):
-    next_url = f'{service_url}/{entity_type}?$inlinecount=allpages'
+def fetch_all_entities_of_type(context: Context, entity_type: str):
+    next_url = f'{context.url}/{entity_type}?$inlinecount=allpages'
+    if context.odata_filter:
+        next_url += f'&$filter={context.odata_filter.replace(" ", "%20")}'
     done = 0
     entity_type_begin_time = time.time()
     session = requests.Session()
@@ -44,7 +46,7 @@ def work_main(context: Context):
     for entity_type in entity_types:
         if entity_type.name == 'Voting':
             raise RuntimeError('Benchmarking of entity type "Voting" is not supported')
-        results.append(fetch_all_entities_of_type(context.url, entity_type.name))
+        results.append(fetch_all_entities_of_type(context, entity_type.name))
     end_time = time.time()
     log.info(f'Total run time was {int(end_time - start_time)}s')
     print_results(results)
