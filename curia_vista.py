@@ -7,7 +7,7 @@ import requests
 
 import pyodata
 from odata2sql import command_dot, command_dump, command_init, command_sync, command_benchmark_aiohttp, \
-    command_benchmark_threading
+    command_benchmark_parallel
 from odata2sql.odata import Context
 from pyodata.v2.model import Config
 
@@ -49,18 +49,22 @@ def main():
                                   help="Cache HTTP requests in <cache>.sqlite. Useful to speed up development.")
     subparsers = parser_top_level.add_subparsers(dest='command', required=True)
     benchmark_aiohttp_parser = subparsers.add_parser('benchmark-aiohttp', help='Benchmark OData server using aiohttp')
-    benchmark_threading_parser = subparsers.add_parser('benchmark-threading',
-                                                       help='Benchmark OData server using multiple threads')
+    benchmark_multithreading_parser = subparsers.add_parser('benchmark-multithreading',
+                                                            help='Benchmark OData fetching using multiple threads')
+    benchmark_multiprocessing_parser = subparsers.add_parser('benchmark-multiprocessing',
+                                                             help='Benchmark OData fetching using multiple processes')
     init_parser = subparsers.add_parser('init', help='Initialize database')
     sync_parser = subparsers.add_parser('sync', help='Synchronize database from scratch')
     update_parser = subparsers.add_parser('update', help='Incrementally update database')
     dot_parser = subparsers.add_parser('dot', help='Show dependencies between entity types')
     dump_parser = subparsers.add_parser('dump', help='Show dependencies between entity types')
-    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, init_parser, sync_parser, update_parser,
-                   dot_parser, dump_parser]:
+    for parser in [benchmark_aiohttp_parser, benchmark_multithreading_parser, benchmark_multiprocessing_parser,
+                   init_parser, sync_parser, update_parser, dot_parser,
+                   dump_parser]:
         parser.add_argument('--include', type=str, nargs='+',
                             help='Entity types to work on, dependencies added as needed. All if unspecified.')
-    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, sync_parser, update_parser, dump_parser]:
+    for parser in [benchmark_aiohttp_parser, benchmark_multithreading_parser, benchmark_multiprocessing_parser,
+                   sync_parser, update_parser, dump_parser]:
         parser.add_argument('--skip', type=str, nargs='+', help='Forcefully ignore the listed entities. Beware!')
     for parser in [init_parser, sync_parser, update_parser]:
         parser.add_argument("-u", '--user', type=str, default='curiavista', help='Database user (default: %(default)s)')
@@ -70,7 +74,8 @@ def main():
         parser.add_argument("-p", '--password', type=str, help='Attempting ~/.pgpass if not provided')
         parser.add_argument("-d", '--database', dest='dbname', type=str, default='curiavista',
                             help='Database name (default: %(default)s)')
-    for parser in [benchmark_aiohttp_parser, benchmark_threading_parser, sync_parser, update_parser]:
+    for parser in [benchmark_aiohttp_parser, benchmark_multithreading_parser, benchmark_multiprocessing_parser,
+                   sync_parser, update_parser]:
         parser.add_argument('--language', type=str, nargs='+',
                             help='Restrict import to specified language(s): DE, FR, IT, RM, EN. (default: all)')
     for parser in [init_parser]:
@@ -86,8 +91,10 @@ def main():
     odata = context_from_args(args)
     if args.command == 'benchmark-aiohttp':
         command_benchmark_aiohttp.work(odata, args)
-    if args.command == 'benchmark-threading':
-        command_benchmark_threading.work(odata, args)
+    if args.command == 'benchmark-multithreading':
+        command_benchmark_parallel.work(odata, args, 'multithreading')
+    if args.command == 'benchmark-multiprocessing':
+        command_benchmark_parallel.work(odata, args, 'multiprocessing')
     if args.command == 'dump':
         command_dump.work(odata, args)
     elif args.command == 'dot':

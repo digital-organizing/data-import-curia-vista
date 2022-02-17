@@ -1,5 +1,7 @@
 import logging
 import time
+from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 import requests
 
@@ -9,10 +11,10 @@ from odata2sql.odata import Context
 log = logging.getLogger(__name__)
 
 
-def fetch_all_entities_of_type(context: Context, entity_type: str):
-    next_url = f'{context.url}/{entity_type}?$inlinecount=allpages'
-    if context.odata_filter:
-        next_url += f'&$filter={context.odata_filter.replace(" ", "%20")}'
+def fetch_all_entities_of_type(service_url, odata_filter, entity_type: str):
+    next_url = f'{service_url}/{entity_type}?$inlinecount=allpages'
+    if odata_filter:
+        next_url += f'&$filter={odata_filter.replace(" ", "%20")}'
     done = 0
     entity_type_begin_time = time.time()
     session = requests.Session()
@@ -38,20 +40,27 @@ def fetch_all_entities_of_type(context: Context, entity_type: str):
     return EntityTypeSyncResult(entity_type, done, runtime_total)
 
 
-def work_main(context: Context):
-    results = []
+def work_main(context: Context, parallelism_strategy: str):
     start_time = time.time()
     entity_types = context.included_entity_types ^ context.skipped_entity_types
     log.info('Entity types to fetch: ' + ', '.join(x.name for x in entity_types))
-    for entity_type in entity_types:
-        if entity_type.name == 'Voting':
-            raise RuntimeError('Benchmarking of entity type "Voting" is not supported')
-        results.append(fetch_all_entities_of_type(context, entity_type.name))
+    if 'Voting' in [et.name for et in entity_types]:
+        raise RuntimeError('Benchmarking of entity type "Voting" is not supported')
+    if parallelism_strategy == 'multithreading':
+        with ThreadPool() as p:
+            results = p.starmap(fetch_all_entities_of_type,
+                                [(context.url, context.odata_filter, et.name) for et in entity_types])
+    elif parallelism_strategy == 'multiprocessing':
+        with Pool() as p:
+            results = p.starmap(fetch_all_entities_of_type,
+                                [(context.url, context.odata_filter, et.name) for et in entity_types])
+    else:
+        RuntimeError(f'Invalid parallelism strategy: "{parallelism_strategy}"')
     end_time = time.time()
     log.info(f'Total run time was {int(end_time - start_time)}s')
     print_results(results)
 
 
-def work(context: Context, args):
+def work(context: Context, args, parallelism_strategy: str):
     set_log_level(log)
-    work_main(context)
+    work_main(context, parallelism_strategy)
