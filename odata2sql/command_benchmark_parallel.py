@@ -42,18 +42,18 @@ def fetch_all_entities_of_type(service_url, odata_filter, entity_type: str):
 
 def work_main(context: Context, parallelism_strategy: str):
     start_time = time.time()
-    entity_types = context.included_entity_types ^ context.skipped_entity_types
+    entity_types = context.include ^ context.skip
     log.info('Entity types to fetch: ' + ', '.join(x.name for x in entity_types))
     if 'Voting' in [et.name for et in entity_types]:
         raise RuntimeError('Benchmarking of entity type "Voting" is not supported')
     if parallelism_strategy == 'multithreading':
         with ThreadPool() as p:
             results = p.starmap(fetch_all_entities_of_type,
-                                [(context.url, context.odata_filter, et.name) for et in entity_types])
+                                [(context.url, context.odata_filter_for_entity_type(et), et.name) for et in entity_types])
     elif parallelism_strategy == 'multiprocessing':
         with Pool() as p:
             results = p.starmap(fetch_all_entities_of_type,
-                                [(context.url, context.odata_filter, et.name) for et in entity_types])
+                                [(context.url, context.odata_filter_for_entity_type(et), et.name) for et in entity_types])
     else:
         RuntimeError(f'Invalid parallelism strategy: "{parallelism_strategy}"')
     end_time = time.time()

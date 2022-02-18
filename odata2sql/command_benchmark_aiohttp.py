@@ -5,18 +5,18 @@ import time
 import aiohttp
 
 from odata2sql.benchmark import print_results, EntityTypeSyncResult, set_log_level
-from odata2sql.odata import Context
+from odata2sql.odata import Settings, Context
 
 log = logging.getLogger(__name__)
 
 
-async def fetch_all_entities_of_type(context: Context, entity_type: str):
+async def fetch_all_entities_of_type(settings: Settings, entity_type: str):
     async with aiohttp.ClientSession() as session:
         done = 0
         entity_type_begin_time = time.time()
-        next_url = f'{context.url}/{entity_type}?$inlinecount=allpages'
-        if context.odata_filter:
-            next_url += f'&$filter={context.odata_filter.replace(" ", "%20")}'
+        next_url = f'{settings.url}/{entity_type}?$inlinecount=allpages'
+        if odata_filter_for_entity_type := settings.odata_filter_for_entity_type(entity_type):
+            next_url += f'&$filter={odata_filter_for_entity_type.replace(" ", "%20")}'
         while True:
             async with session.get(next_url, headers={'Accept': 'application/json'}) as response:
                 json = await response.json()
@@ -39,12 +39,12 @@ async def fetch_all_entities_of_type(context: Context, entity_type: str):
 async def work_main(context: Context):
     start_time = time.time()
     tasks = []
-    entity_types = context.included_entity_types ^ context.skipped_entity_types
+    entity_types = context.include ^ context.skip
     log.info('Entity types to fetch: ' + ', '.join(x.name for x in entity_types))
     for entity_type in entity_types:
         if entity_type.name == 'Voting':
             raise RuntimeError('Benchmarking of entity type "Voting" is not supported')
-        tasks.append(asyncio.create_task(fetch_all_entities_of_type(context, entity_type.name)))
+        tasks.append(asyncio.create_task(fetch_all_entities_of_type(context.settings, entity_type.name)))
     results = await asyncio.gather(*tasks, return_exceptions=True)
     end_time = time.time()
     log.info(f'Total sync time was {int(end_time - start_time)}s')

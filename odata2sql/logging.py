@@ -5,7 +5,7 @@ from logging import LogRecord
 import psycopg2
 
 
-class LogDBHandler(logging.Handler):
+class LogDbHandler(logging.Handler):
     """ Persist logging messages to database """
 
     def emit(self, record: LogRecord) -> None:

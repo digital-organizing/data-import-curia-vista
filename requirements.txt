@@ -1,3 +1,4 @@
+alive-progress
 ipython
 lxml # dependency of pyodata
 psycopg2~=2.9.1

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" Version="1.0">
+    <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+                       m:DataServiceVersion="1.0" m:MaxDataServiceVersion="2.0">
+        <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="EXAMPLE_SRV">
+            <EntityType Name="Person">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                    <PropertyRef Name="Language"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="Language" Type="Edm.String" Nullable="false" MaxLength="2" FixedLength="true"
+                          Unicode="false"/>
+                <Property Name="LastName" Type="Edm.String" MaxLength="60" FixedLength="false" Unicode="true"/>
+                <Property Name="DateOfBirth" Type="Edm.DateTime" Precision="3"/>
+                <NavigationProperty Name="PersonAddresses"
+                                    Relationship="EXAMPLE_SRV.PersonPersonAddress"
+                                    ToRole="PersonAddress" FromRole="Person"/>
+            </EntityType>
+            <EntityType Name="PersonAddress">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                    <PropertyRef Name="Language"/>
+                </Key>
+                <Property Name="PersonNumber" Type="Edm.Int32"/>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="Language" Type="Edm.String" Nullable="false" MaxLength="2" FixedLength="true"
+                          Unicode="false"/>
+                <Property Name="City" Type="Edm.String" MaxLength="Max" FixedLength="false" Unicode="true"/>
+                <NavigationProperty Name="Persons"
+                                    Relationship="EXAMPLE_SRV.PersonPersonAddress"
+                                    ToRole="Person" FromRole="PersonAddress"/>
+            </EntityType>
+            <Association Name="PersonPersonAddress">
+                <End Type="EXAMPLE_SRV.Person" Role="Person" Multiplicity="1"/>
+                <End Type="EXAMPLE_SRV.PersonAddress" Role="PersonAddress" Multiplicity="*"/>
+                <ReferentialConstraint>
+                    <Principal Role="Person">
+                        <PropertyRef Name="ID"/>
+                        <PropertyRef Name="Language"/>
+                    </Principal>
+                    <Dependent Role="PersonAddress">
+                        <PropertyRef Name="PersonNumber"/>
+                        <PropertyRef Name="Language"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="Entities" m:IsDefaultEntityContainer="true">
+                <EntitySet Name="Person" EntityType="EXAMPLE_SRV.Person"/>
+                <EntitySet Name="PersonAddress" EntityType="EXAMPLE_SRV.PersonAddress"/>
+                <AssociationSet Name="PersonPersonAddress"
+                                Association="EXAMPLE_SRV.PersonPersonAddress">
+                    <End Role="Person" EntitySet="Person"/>
+                    <End Role="PersonAddress" EntitySet="PersonAddress"/>
+                </AssociationSet>
+            </EntityContainer>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
