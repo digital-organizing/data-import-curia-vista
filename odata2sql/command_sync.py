@@ -115,17 +115,25 @@ def fetch_all_entities_by_entity_type(odata: Context, entity_type: EntityType):
 
 def work(context: Context, args, sync_by_fk: Dict[str, str] = {}):
     """Sync of OData into our own database. On conflict, existing data will be overwritten"""
+
+    entity_types_skipped = sorted(context.included_entity_types & context.skipped_entity_types, key=lambda a: a.name)
+    entity_types_included = sorted(context.included_entity_types - context.skipped_entity_types, key=lambda a: a.name)
+    log.info(f'Entity types to sync: {", ".join(e.name for e in entity_types_included)}')
+    if len(entity_types_skipped):
+        log.warning(f'Entity types to skip: {", ".join(e.name for e in entity_types_skipped)}')
     with database_connection(args) as db_connection:
         db_logger = LogDBHandler(context.session_id, db_connection)
         log.addHandler(db_logger)
         ranks = context.get_topology()
         for rank, entity_types_in_rank in enumerate(ranks):
-            log.info(f'Fetching rank #{rank}: {", ".join(e.name for e in entity_types_in_rank)}')
-            for entity_type in sorted(entity_types_in_rank, key=lambda a: a.name):
-                if entity_type in context.skipped_entity_types:
-                    log.warning(f'Skipping entity type "{entity_type.name}"')
-                    continue
-                log.info(f'Fetching all entities of type "{entity_type.name}"')
+            entity_types_in_rank_skipped = entity_types_in_rank & context.skipped_entity_types
+            entity_types_in_rank_included = entity_types_in_rank - context.skipped_entity_types
+            log.info(f'Entity types in #{rank}: {", ".join(e.name for e in entity_types_in_rank)}')
+            log.info(f'Fetching in #{rank}: {", ".join(e.name for e in entity_types_in_rank_included)}')
+            if len(entity_types_in_rank_skipped):
+                log.warning(f'Skipping in rank #{rank} {", ".join(e.name for e in entity_types_in_rank_skipped)}')
+            for entity_type in sorted(entity_types_in_rank_included, key=lambda a: a.name):
+                log.info(f'Fetching entities of type "{entity_type.name}"')
 
                 # Pick suitable generator for fetching entities
                 if entity_type.name in sync_by_fk:
