@@ -1,0 +1,114 @@
+digraph G {
+  rankdir=LR;
+  subgraph rank_0 {
+    rank=same;
+    MemberCouncil;
+    Party;
+    Canton;
+    Council;
+    ParlGroupHistory;
+    Committee;
+    SeatOrganisationNr;
+    ParlGroup;
+    LegislativePeriod;
+    External;
+    Tags;
+    BusinessType;
+  }
+  subgraph rank_1 {
+    rank=same;
+    Person;
+    Session;
+    MemberCommitteeHistory;
+    MemberParlGroup;
+    MemberParty;
+    MemberCommittee;
+    MemberCouncilHistory;
+  }
+  subgraph rank_2 {
+    rank=same;
+    PersonOccupation;
+    Citizenship;
+    Business;
+    Meeting;
+    PersonCommunication;
+    PersonAddress;
+    PersonEmployee;
+    PersonInterest;
+  }
+  subgraph rank_3 {
+    rank=same;
+    BusinessStatus;
+    BusinessResponsibility;
+    RelatedBusiness;
+    Publication;
+    BusinessRole;
+    Subject;
+    Vote;
+    Bill;
+  }
+  subgraph rank_4 {
+    rank=same;
+    Rapporteur;
+    Transcript;
+    BillStatus;
+    Resolution;
+    Voting;
+    Objective;
+    SubjectBusiness;
+    Preconsultation;
+    BillLink;
+  }
+  Transcript -> Subject [label="* - 1"];
+  Transcript -> Business [label="* - 0..1"];
+  Transcript -> MemberCouncil [label="* - 1"];
+  PersonEmployee -> Person [label="* - 1"];
+  Preconsultation -> Business [label="* - 1"];
+  Preconsultation -> Bill [label="* - 1"];
+  RelatedBusiness -> Business [label="* - 1"];
+  Publication -> Business [label="* - 1"];
+  BusinessRole -> Committee [label="* - 0..1"];
+  BusinessRole -> Canton [label="* - 1"];
+  BusinessRole -> External [label="* - 1"];
+  BusinessRole -> Business [label="* - 1"];
+  BusinessRole -> MemberCouncil [label="* - 1"];
+  BusinessRole -> ParlGroup [label="* - 1"];
+  MemberCouncilHistory -> MemberCouncil [label="* - 1"];
+  Vote -> Session [label="* - 1"];
+  Vote -> Business [label="* - 1"];
+  Vote -> LegislativePeriod [label="* - 1"];
+  Rapporteur -> Bill [label="* - 1"];
+  Person -> MemberCouncil [label="* - 1"];
+  Session -> LegislativePeriod [label="* - 1"];
+  Business -> Session [label="* - 1"];
+  Business -> Council [label="* - 0..1"];
+  Business -> Council [label="* - 0..1"];
+  Business -> LegislativePeriod [label="* - 1"];
+  Business -> BusinessType [label="* - 1"];
+  MemberCommitteeHistory -> MemberCouncil [label="* - 1"];
+  PersonAddress -> Person [label="* - 1"];
+  MemberCommittee -> Committee [label="* - 1"];
+  MemberCommittee -> MemberCouncil [label="* - 1"];
+  Subject -> Meeting [label="* - 1"];
+  BillLink -> Bill [label="* - 1"];
+  Resolution -> Bill [label="* - 1"];
+  BusinessStatus -> Business [label="* - 1"];
+  MemberParlGroup -> MemberCouncil [label="* - 1"];
+  MemberParlGroup -> ParlGroup [label="* - 1"];
+  SubjectBusiness -> Subject [label="* - 1"];
+  SubjectBusiness -> Business [label="* - 1"];
+  PersonCommunication -> Person [label="* - 1"];
+  PersonInterest -> Person [label="* - 1"];
+  Bill -> Business [label="* - 1"];
+  PersonOccupation -> Person [label="* - 1"];
+  Citizenship -> Person [label="* - 1"];
+  Citizenship -> MemberCouncil [label="* - 1"];
+  BillStatus -> Bill [label="* - 1"];
+  BusinessResponsibility -> Business [label="* - 1"];
+  Objective -> Bill [label="* - 1"];
+  Voting -> MemberCouncil [label="* - 1"];
+  Voting -> Vote [label="* - 1"];
+  Meeting -> Session [label="* - 1"];
+  MemberParty -> Party [label="* - 1"];
+  MemberParty -> MemberCouncil [label="* - 1"];
+}
