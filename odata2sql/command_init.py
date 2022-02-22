@@ -42,8 +42,10 @@ def _property_to_schema(p: StructTypeProperty) -> str:
     except KeyError:
         if type_name == "Edm.String":
             if p.max_length > 0:
-                # Can not use char as pyodata does not extract the FixedLength attribute
-                type_sql = f"varchar({p.max_length})"
+                if p.fixed_length:
+                    type_sql = f"char({p.max_length})"
+                else:
+                    type_sql = f"varchar({p.max_length})"
             else:
                 type_sql = "TEXT"
         else:
