@@ -1,4 +1,4 @@
--- Create schemas, which allows to express the guarantees given by their respective tables/views/etc.
+-- Create schemas, which allows to express the intention of and guarantees given by their respective tables/views/etc.
 
 CREATE SCHEMA odata;
 COMMENT ON SCHEMA odata is 'Data as provided by the OData service';
