@@ -102,7 +102,7 @@ def _run_sql_scripts(cur: cursor, directory_name: Path) -> None:
     directory_name = directory_name.resolve()  # Allow caller to be lenient
     if not directory_name.is_dir():
         raise ValueError(f'Not a valid path: {directory_name}')
-    for entry in directory_name.glob('*.sql'):
+    for entry in sorted(directory_name.glob('*.sql')):
         with open(entry) as f:
             script_content = f.read()
         log.info(f'Executing script {entry}')
