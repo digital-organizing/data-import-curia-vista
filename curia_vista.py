@@ -11,7 +11,7 @@ from odata2sql import command_dot, command_dump, command_init, command_sync, com
 from odata2sql.odata import Context
 from pyodata.v2.model import Config
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('curia_vista')
 
 SYNC_BY_FK = {
     'Voting': 'Vote'
