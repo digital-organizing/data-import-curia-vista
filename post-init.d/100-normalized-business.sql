@@ -15,6 +15,7 @@ SELECT id,
     reason_text,
     documentation_text,
     motion_text,
+    federal_council_response_text,
     federal_council_proposal,
     federal_council_proposal_text,
     federal_council_proposal_date,
@@ -30,10 +31,12 @@ DROP VIEW IF EXISTS private.normalized_odata_business_type CASCADE;
 CREATE OR REPLACE VIEW private.normalized_odata_business_type AS
 SELECT business_type as id,
     language,
-    business_type_name as name
+    business_type_name as name,
+    business_type_abbreviation as abbreviation
 FROM odata.business
 WHERE business_type IS NOT NULL
 GROUP BY business_type,
     language,
-    business_type_name;
+    business_type_name,
+    business_type_abbreviation;
 COMMENT ON VIEW private.normalized_odata_business_type is 'Derived from business table';

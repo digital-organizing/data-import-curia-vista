@@ -7,7 +7,7 @@ SELECT id,
        meaning_yes,
        meaning_no,
        vote_end,
-       business_number,
+       business_number AS id_business,
        id_session
 FROM odata.vote;
 COMMENT ON VIEW private.normalized_odata_vote IS 'Normalized vote bill';

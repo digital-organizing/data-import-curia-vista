@@ -8,6 +8,7 @@ SELECT id,
     date_leaving,
     date_election,
     date_oath,
-    date_resignation
+    date_resignation,
+    modified
 FROM odata.member_council_history;
 COMMENT ON VIEW private.normalized_odata_bill is 'Normalized member_council_history table; Query member_council via person_number';

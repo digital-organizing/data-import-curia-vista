@@ -17,6 +17,7 @@ SELECT id,
     date_leaving,
     date_election,
     date_oath,
-    date_resignation
+    date_resignation,
+    modified
 FROM odata.member_council;
 COMMENT ON VIEW private.normalized_odata_bill is 'Normalized member_council table; date_* columns refer to last legislature period; Query member_council_history via person_number for details';

@@ -7,6 +7,7 @@ SELECT id,
     legislative_period_name AS name,
     legislative_period_abbreviation AS abbreviation,
     start_date,
-    end_date
+    end_date,
+    modified
 FROM odata.legislative_period;
 COMMENT ON VIEW private.normalized_odata_legislative_period is 'Normalized legislative_period table';
