@@ -1044,4 +1044,5 @@ if __name__ == '__main__':
     except Exception as e:
         log.error(f'Exception raised: {e}')
         traceback.print_exc()
+        sys.exit(1)
     sys.exit()

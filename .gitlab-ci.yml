@@ -1,0 +1,26 @@
+services:
+  - postgres
+
+variables:
+  # Configure postgres service (https://hub.docker.com/_/postgres/)
+  POSTGRES_DB: curiavista
+  POSTGRES_USER: curiavista
+  POSTGRES_PASSWORD: very_secure
+
+image: python:latest
+
+run:
+  script:
+    - apt update
+    - apt install -y graphviz
+    - pip install -r requirements.txt
+    - pytest
+    - ./curia_vista.py dot | tee -a curia_vista-structure.dot | dot -Tsvg > curia_vista-structure.svg
+    - umask 077
+    - echo "postgres:5432:curiavista:curiavista:very_secure" > ~/.pgpass
+    - ./curia_vista.py -v init --host postgres
+    - ./curia_vista.py -v sync --host postgres --language de --legislative-period 51
+
+  artifacts:
+    paths:
+      - curia_vista-structure.*
