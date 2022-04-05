@@ -3,8 +3,8 @@ ipython
 lxml # dependency of pyodata
 psycopg2~=2.9.1
 pytest
-requests~=2.25.1
 requests-cache
+requests~=2.25.1
 toposort~=1.6
 
 # Benchmarking
