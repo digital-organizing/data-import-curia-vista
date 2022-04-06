@@ -1,7 +1,6 @@
-# About
+# Goal
 
-This project copies the Curia Vista data into a local PostgreSQL database. This allows to improve its quality and run
-arbitrary queries on it (quickly).
+Simplify working with Curia Vista data.
 
 ## Background
 
@@ -10,17 +9,38 @@ session 1995 (Federal Council dispatches, procedural requests, elections, petiti
 
 Source and further reading: [parlament.ch](https://www.parlament.ch/en/ratsbetrieb/curia-vista)
 
-## Design Goals
+## Design Aspects
 
-The Curia Vista database has many quirks and shortcomings (e.g. violation of self-imposed constraints, non-normalized
-data).
+### Speed
+
+By importing Curia Vista data into a (local) PostgreSQL database, queries are as fast as your hardware is.
+
+Slow queries can be improved by adding relevant indexes.
+
+### Sane Interface
+
+The official Curia Vista service uses OData 2.0, which is painful to work with.
+
+By importing data to PostgreSQL, users can query data using SQL.
+
+### Schema Quality
+
+The schema served via the official Curia Vista service should be improved:
+
+1) Normalize the mirrored data
+2) Come up with a new, improved database schema
+
+### Data Quality
+
+The Curia Vista data has many quirks and shortcomings (e.g. violation of constraints).
 
 This project aims to improve the data quality by:
 
-1) Enforcing database constrains (generic)
-   - Reporting violations in an actionable manner
-2) Normalize the mirrored data 
-3) Support fixing up known issues (Curia Vista specific)
+1) Enforcing schema constrains
+2) Fixing up data found to be broken
+
+Problematic data should be reported as [GitLab issue](https://gitlab.com/votelog/data-provider-curia-vista), hopefully
+to be fixed by upstream Curia Vista at some point.
 
 ## Setup
 
@@ -32,9 +52,9 @@ pip install -r requirements.txt
 
 The database password needs to be provided using the ~/.pgpass file.
 
-For assistance with the tool, please pass it `--help`, i.e. `./curia_vista.py --help` or `./curia_vista.py sync --help`.
+For assistance with the tool, please pass `--help`, e.g. `./curia_vista.py --help` or `./curia_vista.py sync --help`.
 
-### Mirroring: Database initialization
+### Mirroring: Database Initialization
 
 This tool converts the [OData 2.0](https://www.odata.org/documentation/odata-version-2-0/) based
 [metadata description](https://ws.parlament.ch/OData.svc/$metadata) to an SQL schema.
