@@ -105,7 +105,7 @@ SYNC_CONFIGURATION = {
                 # 'SubmissionCouncilName',
                 # 'SubmissionCouncilAbbreviation',
                 'SubmissionSession',
-                # 'SubmissionLegislativePeriod',
+                'SubmissionLegislativePeriod',
                 'FirstCouncil1',
                 # 'FirstCouncil1Name',
                 # 'FirstCouncil1Abbreviation',
