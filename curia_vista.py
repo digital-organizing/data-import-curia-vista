@@ -18,8 +18,8 @@ SYNC_CONFIGURATION = {
             'selected_properties': {
                 'ID',
                 'Language',
-                'IdBusiness',
-                # 'BusinessNumber',
+                # 'IdBusiness',
+                'BusinessNumber',
                 # 'BusinessShortNumber',
                 # 'BusinessType',
                 # 'BusinessTypeName',
