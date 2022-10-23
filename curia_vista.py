@@ -846,7 +846,7 @@ SYNC_CONFIGURATION = {
                 # 'BusinessShortNumber',
                 # 'BusinessTitle',
                 # 'BusinessAuthor',
-                # 'BillNumber',
+                'BillNumber',
                 # 'BillTitle',
                 'IdLegislativePeriod',
                 # 'IdSession',
