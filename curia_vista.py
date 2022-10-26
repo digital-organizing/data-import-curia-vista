@@ -529,7 +529,7 @@ SYNC_CONFIGURATION = {
                 'ID',
                 'Language',
                 'PartyNumber',
-                # 'PartyName',
+                'PartyName',
                 'StartDate',
                 'EndDate',
                 'Modified',
