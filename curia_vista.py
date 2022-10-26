@@ -541,7 +541,7 @@ SYNC_CONFIGURATION = {
                 'ID',
                 'Language',
                 'PersonNumber',
-                # 'PersonIdCode',
+                'PersonIdCode',
                 'Title',
                 'TitleText',
                 'LastName',
