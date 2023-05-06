@@ -47,7 +47,7 @@ def test_can_be_synced_by(context, dependant_name, principal_name, expected, com
     ({}, {'Bill', 'BillLink', 'BillStatus', 'Business', 'BusinessResponsibility', 'BusinessRole', 'BusinessStatus',
           'BusinessType', 'Canton', 'Citizenship', 'Committee', 'Council', 'External', 'LegislativePeriod', 'Meeting',
           'MemberCommittee', 'MemberCommitteeHistory', 'MemberCouncil', 'MemberCouncilHistory', 'MemberParlGroup',
-          'MemberParty', 'Objective', 'ParlGroup', 'ParlGroupHistory', 'Party', 'Person', 'PersonAddress',
+          'MemberParty', 'Mutation', 'Objective', 'ParlGroup', 'ParlGroupHistory', 'Party', 'Person', 'PersonAddress',
           'PersonCommunication', 'PersonEmployee', 'PersonInterest', 'PersonOccupation', 'Preconsultation',
           'Publication', 'Rapporteur', 'RelatedBusiness', 'Resolution', 'SeatOrganisationNr', 'Session', 'Subject',
           'SubjectBusiness', 'Tags', 'Transcript', 'Vote', 'Voting'}, "All entity types"),
