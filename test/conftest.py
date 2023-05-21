@@ -16,6 +16,14 @@ def local_metadata() -> bytes:
         return metadata_file.read()
 
 
+@pytest.fixture()
+def live_metadata() -> bytes:
+    resp = requests.get(f"{SERVICE_URL}/$metadata")
+    assert resp.status_code == 200
+    assert resp.headers['content-type'] == 'application/xml;charset=utf-8'
+    return resp.content
+
+
 @pytest.fixture
 def client(local_metadata):
     """Client with Curia Vista's OData schema"""
