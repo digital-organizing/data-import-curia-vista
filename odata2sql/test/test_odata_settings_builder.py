@@ -6,7 +6,7 @@ from odata2sql.odata import SettingsBuilder
 from odata2sql.test.conftest import SERVICE_URL
 
 
-def test_url(client_curia_vista):
+def test_url():
     assert SettingsBuilder(SERVICE_URL).build().url == SERVICE_URL
     assert SettingsBuilder().url(SERVICE_URL).build().url == SERVICE_URL
 

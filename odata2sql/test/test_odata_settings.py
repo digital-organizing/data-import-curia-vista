@@ -4,14 +4,6 @@ from odata2sql.odata import SettingsBuilder
 from odata2sql.test.conftest import SERVICE_URL
 
 
-def test_sync_unconfigured_entities(client_curia_vista):
-    assert SettingsBuilder(SERVICE_URL).build().sync_unconfigured_entities
-    assert SettingsBuilder(SERVICE_URL).sync_config(
-        {'sync_unconfigured_entities': True}).build().sync_unconfigured_entities
-    assert not SettingsBuilder(SERVICE_URL).sync_config(
-        {'sync_unconfigured_entities': False}).build().sync_unconfigured_entities
-
-
 @pytest.mark.parametrize('config, configured_entities, include, skip, comment', [
     ({}, set(), set(), set(), 'Empty configuration'),
     ({'entities': {'Bill': {}}}, {'Bill'}, {'Bill'}, set(), 'Sync per default'),

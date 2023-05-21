@@ -14,7 +14,7 @@ run:
     - apt update
     - apt install -y graphviz
     - pip install -r requirements.txt
-    - pytest
+    - python -m pytest
     - ./curia_vista.py dot | tee -a curia_vista-structure.dot | dot -Tsvg > curia_vista-structure.svg
     - umask 077
     - echo "postgres:5432:curiavista:curiavista:very_secure" > ~/.pgpass

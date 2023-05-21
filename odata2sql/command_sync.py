@@ -12,11 +12,11 @@ import psycopg2
 from alive_progress import alive_bar
 from psycopg2 import ProgrammingError
 from psycopg2.extras import execute_batch
+from pyodata.v2.model import EntityType, ReferentialConstraint
 
 from odata2sql.logging import LogDbHandler
 from odata2sql.odata import Context, Settings, get_property_names_of_entity_type
 from odata2sql.sql import database_connection, to_pg_name
-from pyodata.v2.model import EntityType, ReferentialConstraint
 
 log = logging.getLogger(__name__)
 

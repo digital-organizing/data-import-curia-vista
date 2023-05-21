@@ -6,11 +6,10 @@ import uuid
 from functools import cached_property
 from typing import Optional, List, Iterable, Set, Dict, Union
 
-import requests
-from toposort import toposort
-
 import pyodata
+import requests
 from pyodata.v2.model import EntityType, Association, EndRole, Config, ReferentialConstraint
+from toposort import toposort
 
 log = logging.getLogger(__name__)
 

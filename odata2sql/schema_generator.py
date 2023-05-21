@@ -1,8 +1,9 @@
 from typing import Iterable
 
+from pyodata.v2.model import StructTypeProperty, EntityType
+
 from odata2sql import sql
 from odata2sql.odata import Context
-from pyodata.v2.model import StructTypeProperty, EntityType
 
 
 def _key_to_ddl(key_properties: Iterable[StructTypeProperty]) -> str:
