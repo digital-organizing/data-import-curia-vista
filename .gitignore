@@ -15,6 +15,7 @@ Thumbs.db
 
 # Python
 __pycache__
+.venv
 
 # R(Studio) specific (temp) files
 *.Rproj
